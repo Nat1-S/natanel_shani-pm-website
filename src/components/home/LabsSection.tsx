@@ -24,12 +24,12 @@ function LabCard({
     <motion.div
       whileHover={{ y: -4 }}
       onClick={onClick}
-      className="glass rounded-2xl border border-[var(--card-border)] p-6 cursor-pointer transition-colors hover:border-[var(--accent)]/30 group"
+      className="glass rounded-2xl border border-[var(--card-border)] p-6 cursor-pointer transition-colors hover:border-[var(--accent)]/30 group min-h-[220px] flex flex-col"
     >
       <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-[var(--accent)] transition-colors">
         {lab.title}
       </h3>
-      <p className="text-sm text-[var(--muted-foreground)] line-clamp-3 mb-4">
+      <p className="text-sm text-[var(--muted-foreground)] line-clamp-3 mb-4 flex-1">
         {lab.description}
       </p>
       {lab.tags.length > 0 && (

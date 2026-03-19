@@ -8,6 +8,7 @@ import { Trash2, Edit2, Upload } from "lucide-react";
 
 const ACCEPT =
   ".pdf,.doc,.docx,.pptx,.xls,.xlsx,.mp4,.webm,.mov,.avi,.mkv,.jpg,.jpeg,.png,.gif,.webp,.md";
+const IMAGE_ACCEPT = ".jpg,.jpeg,.png,.gif,.webp";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function isUuid(id: string) {
@@ -34,11 +35,14 @@ export function AdminCaseStudies() {
     description: string;
     useCase: string;
     documents: CaseStudyDocument[];
-  }>({ title: "", description: "", useCase: "", documents: [] });
+    imageUrl: string;
+  }>({ title: "", description: "", useCase: "", documents: [], imageUrl: "" });
   const [uploading, setUploading] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [submitError, setSubmitError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+  const imageRef = useRef<HTMLInputElement>(null);
 
   const load = () => getCaseStudies().then(setItems);
 
@@ -75,21 +79,38 @@ export function AdminCaseStudies() {
     setForm((p) => ({ ...p, documents: p.documents.filter((_, i) => i !== idx) }));
   };
 
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setImageUploading(true);
+    try {
+      const url = await uploadFile(f, `case-studies/images/${Date.now()}-${f.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`);
+      if (url) setForm((p) => ({ ...p, imageUrl: url }));
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setImageUploading(false);
+      if (imageRef.current) imageRef.current.value = "";
+    }
+  };
+
+  const removeImage = () => setForm((p) => ({ ...p, imageUrl: "" }));
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError("");
     try {
       if (editing) {
         if (isUuid(editing.id)) {
-          await updateCaseStudy(editing.id, { ...form, order: editing.order });
+          await updateCaseStudy(editing.id, { ...form, imageUrl: form.imageUrl || undefined, order: editing.order });
         } else {
-          await addCaseStudy({ ...form, order: items.length });
+          await addCaseStudy({ ...form, imageUrl: form.imageUrl || undefined, order: items.length });
         }
         setEditing(null);
       } else {
         await addCaseStudy({ ...form, order: items.length });
       }
-      setForm({ title: "", description: "", useCase: "", documents: [] });
+      setForm({ title: "", description: "", useCase: "", documents: [], imageUrl: "" });
       setUploadError("");
       load();
     } catch (err) {
@@ -135,6 +156,37 @@ export function AdminCaseStudies() {
           <p className="text-xs text-[var(--muted-foreground)] mt-1">
             Markdown: **טקסט** למודגש, Enter לשורה חדשה
           </p>
+        </div>
+        <div>
+          <label className="block text-sm text-[var(--muted-foreground)] mb-2">
+            תמונת פרופיל לפרויקט (אופציונלי)
+          </label>
+          <input
+            ref={imageRef}
+            type="file"
+            accept={IMAGE_ACCEPT}
+            onChange={handleImageChange}
+            className="hidden"
+          />
+          <div className="flex gap-2 flex-wrap items-center">
+            <button
+              type="button"
+              onClick={() => imageRef.current?.click()}
+              disabled={imageUploading}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[var(--card-border)] hover:border-[var(--accent)]/50 transition-colors disabled:opacity-50"
+            >
+              <Upload className="h-4 w-4" />
+              {imageUploading ? "מעלה…" : form.imageUrl ? "החלף תמונה" : "העלה תמונה"}
+            </button>
+            {form.imageUrl && (
+              <>
+                <img src={form.imageUrl} alt="" className="h-12 w-auto rounded object-cover" />
+                <button type="button" onClick={removeImage} className="text-red-400 hover:text-red-300 text-sm">
+                  הסר תמונה
+                </button>
+              </>
+            )}
+          </div>
         </div>
         <div>
           <label className="block text-sm text-[var(--muted-foreground)] mb-2">
@@ -199,7 +251,7 @@ export function AdminCaseStudies() {
               type="button"
               onClick={() => {
                 setEditing(null);
-                setForm({ title: "", description: "", useCase: "", documents: [] });
+                setForm({ title: "", description: "", useCase: "", documents: [], imageUrl: "" });
                 setUploadError("");
               }}
               className="px-4 py-2 rounded-lg border border-[var(--card-border)] text-sm"
@@ -216,11 +268,14 @@ export function AdminCaseStudies() {
             <div>
               <p className="font-medium text-foreground">{cs.title}</p>
               <p className="text-sm text-[var(--muted-foreground)] line-clamp-1">{cs.description}</p>
-              {(cs.documents?.length ?? 0) > 0 ? (
-                <p className="text-xs text-[var(--accent)] mt-1">✓ {(cs.documents?.length ?? 0)} קבצים</p>
-              ) : (
-                <p className="text-xs text-[var(--muted-foreground)]/70 mt-1">ללא קבצים</p>
-              )}
+              <div className="flex gap-2 text-xs mt-1">
+                {cs.imageUrl && <span className="text-[var(--accent)]">✓ תמונה</span>}
+                {(cs.documents?.length ?? 0) > 0 ? (
+                  <span className="text-[var(--accent)]">✓ {(cs.documents?.length ?? 0)} קבצים</span>
+                ) : (
+                  <span className="text-[var(--muted-foreground)]/70">ללא קבצים</span>
+                )}
+              </div>
             </div>
             <div className="flex gap-2">
               <button
@@ -231,6 +286,7 @@ export function AdminCaseStudies() {
                     description: cs.description,
                     useCase: cs.useCase,
                     documents: [...(cs.documents ?? [])],
+                    imageUrl: cs.imageUrl ?? "",
                   });
                   setUploadError("");
                 }}

@@ -11,5 +11,6 @@ export interface CaseStudy {
   description: string;
   useCase: string;
   documents: CaseStudyDocument[];
+  imageUrl?: string;
   order: number;
 }

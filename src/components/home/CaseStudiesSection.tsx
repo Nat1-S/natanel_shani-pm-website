@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, FolderOpen, ChevronRight, ChevronLeft } from "lucide-react";
+import { FolderOpen, ChevronRight, ChevronLeft } from "lucide-react";
 import { getCaseStudies } from "@/lib/supabase/case-studies";
 import { mockCaseStudies } from "@/data/mock-case-studies";
 import { DocumentViewerModal } from "@/components/ui/DocumentViewerModal";
@@ -77,13 +77,21 @@ export function CaseStudiesSection() {
                   transition={{ duration: 0.2 }}
                   whileHover={{ y: -4 }}
                   onClick={() => setSelected(cs)}
-                  className="glass rounded-2xl border border-[var(--card-border)] p-6 cursor-pointer transition-colors hover:border-[var(--accent)]/30 group"
+                  className="glass rounded-2xl border border-[var(--card-border)] p-6 cursor-pointer transition-colors hover:border-[var(--accent)]/30 group min-h-[220px] flex flex-col"
                 >
-                  <FileText className="h-10 w-10 text-[var(--accent)] mb-4 mx-auto sm:mx-0" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-[var(--accent)] transition-colors text-center sm:text-left">
+                  {cs.imageUrl ? (
+                    <div className="w-full h-36 -mx-6 -mt-6 mb-4 rounded-t-2xl overflow-hidden grid place-items-center">
+                      <img
+                        src={cs.imageUrl}
+                        alt={cs.title}
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                  ) : null}
+                  <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-[var(--accent)] transition-colors text-left">
                     {cs.title}
                   </h3>
-                  <p className="text-sm text-[var(--muted-foreground)] line-clamp-3 text-center sm:text-left">
+                  <p className="text-sm text-[var(--muted-foreground)] line-clamp-3 text-left flex-1">
                     {cs.description}
                   </p>
                 </motion.div>

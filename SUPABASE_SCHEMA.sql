@@ -13,6 +13,7 @@ create table if not exists public.case_studies (
   document_url text not null default '',
   document_type text not null default 'pdf',
   documents jsonb not null default '[]',
+  image_url text default '',
   "order" int not null default 0,
   created_at timestamptz default now()
 );

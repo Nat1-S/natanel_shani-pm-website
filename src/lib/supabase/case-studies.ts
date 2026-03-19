@@ -41,6 +41,7 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
         description: row.description ?? "",
         useCase: row.use_case ?? "",
         documents: normalizeDocuments(row),
+        imageUrl: row.image_url ?? undefined,
         order: row.order ?? 0,
       })) as CaseStudy[];
     } catch (e) {
@@ -61,6 +62,7 @@ export async function addCaseStudy(data: Omit<CaseStudy, "id">): Promise<string 
       description: data.description,
       use_case: data.useCase,
       documents: data.documents ?? [],
+      image_url: data.imageUrl ?? "",
       order: data.order,
     })
     .select("id")
@@ -77,6 +79,7 @@ export async function updateCaseStudy(id: string, data: Partial<CaseStudy>): Pro
     ...(data.description != null && { description: data.description }),
     ...(data.useCase != null && { use_case: data.useCase }),
     ...(data.documents != null && { documents: data.documents }),
+    ...(data.imageUrl != null && { image_url: data.imageUrl }),
     ...(data.order != null && { order: data.order }),
   }).eq("id", id);
   if (error) throw new Error(error.message);
