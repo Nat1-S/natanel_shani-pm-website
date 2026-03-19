@@ -86,7 +86,7 @@ export function AdminAbout() {
       {aboutKeys.map((key) => (
         <div key={key}>
           <label className="block text-sm font-medium text-foreground mb-1 capitalize">
-            {key === "cvUrl" ? "CV URL (קישור להורדת קורות חיים)" : key.replace(/([A-Z])/g, " $1").trim()}
+            {key.replace(/([A-Z])/g, " $1").trim()}
           </label>
           <input
             type="text"
@@ -141,3 +141,4 @@ export function AdminAbout() {
     </div>
   );
 }
+
