@@ -18,10 +18,10 @@ export function Navbar() {
       transition={{ duration: 0.5 }}
       className="fixed top-0 left-0 right-0 z-50 glass"
     >
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="flex items-center gap-2 text-foreground hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 text-foreground hover:opacity-80 transition-opacity mr-6"
         >
           <Layers className="h-5 w-5 text-[var(--accent)]" />
           <span className="font-semibold tracking-tight">NS</span>
@@ -45,6 +45,8 @@ export function Navbar() {
           >
             Labs
           </Link>
+        </div>
+        <div className="ml-auto flex items-center gap-4">
           <Link
             href="/admin"
             className="text-sm text-[var(--muted-foreground)] hover:text-foreground transition-colors"

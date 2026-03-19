@@ -40,7 +40,7 @@ export function CaseStudiesSection() {
   const isLoading = false;
 
   return (
-    <section id="case-studies" ref={ref} className="py-24 scroll-mt-20">
+    <section id="case-studies" ref={ref} className="pt-24 pb-12 scroll-mt-20">
       <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-8">
         Product Case Studies
       </h2>

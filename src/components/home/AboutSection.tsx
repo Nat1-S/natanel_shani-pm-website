@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Mail, Linkedin } from "lucide-react";
+import { Mail, Linkedin, FileDown } from "lucide-react";
 import { getAbout, ABOUT_DEFAULT } from "@/lib/supabase/about";
 import { getCached, setCache } from "@/lib/cache";
 import type { AboutContent } from "@/types/about";
@@ -58,7 +58,7 @@ export function AboutSection() {
             {content.reachOutTitle}
           </h3>
           <p className="mb-4">{content.reachOut}</p>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-4">
             <a
               href={`mailto:${content.email}`}
               className="inline-flex items-center gap-2 text-foreground hover:text-[var(--accent)] transition-colors"
@@ -75,6 +75,18 @@ export function AboutSection() {
               <Linkedin className="h-4 w-4" />
               {content.linkedinUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
             </a>
+            {content.cvUrl && (
+              <a
+                href={content.cvUrl}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-foreground hover:text-[var(--accent)] transition-colors"
+              >
+                <FileDown className="h-4 w-4" />
+                CV
+              </a>
+            )}
           </div>
         </div>
       </div>

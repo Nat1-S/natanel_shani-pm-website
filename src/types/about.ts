@@ -9,6 +9,7 @@ export interface AboutContent {
   reachOut: string;
   email: string;
   linkedinUrl: string;
+  cvUrl?: string;
   heroTagline?: string;
   heroSkills?: string[];
 }

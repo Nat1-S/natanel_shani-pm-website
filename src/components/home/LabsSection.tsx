@@ -70,7 +70,7 @@ export function LabsSection() {
   const visibleLabs = labs?.slice(page * VISIBLE_COUNT, page * VISIBLE_COUNT + VISIBLE_COUNT) ?? [];
 
   return (
-    <section id="labs" ref={ref} className="py-24 scroll-mt-20">
+    <section id="labs" ref={ref} className="pt-12 pb-24 scroll-mt-24">
       <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-8">
         Labs & Side Projects
       </h2>

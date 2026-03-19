@@ -23,6 +23,7 @@ export const ABOUT_DEFAULT: AboutContent = {
     "I'd love to talk about product, AI, strategy, or just share management insights.",
   email: "Natanel.Shani@gmail.com",
   linkedinUrl: "https://linkedin.com/in/natanel-shani/",
+  cvUrl: "",
 };
 
 export async function getAbout(): Promise<AboutContent> {
