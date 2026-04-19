@@ -9,10 +9,6 @@ function getDocViewerUrl(url: string): string {
   return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
 }
 
-function getOfficeViewerTabUrl(url: string): string {
-  return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}`;
-}
-
 function isPdfMedia(m: LabMedia): boolean {
   const ref = (m.name ?? m.url).split("?")[0].toLowerCase();
   return ref.endsWith(".pdf");
@@ -69,7 +65,7 @@ function MediaItem({ m }: { m: LabMedia }) {
         />
       </div>
 
-      <div className="flex flex-col gap-3 md:hidden">
+      <div className="md:hidden">
         {isMd ? (
           <div className="overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950">
             <iframe
@@ -79,41 +75,13 @@ function MediaItem({ m }: { m: LabMedia }) {
               className="block h-[min(92dvh,900px)] w-full min-h-[72dvh] border-0"
             />
           </div>
-        ) : isPdf ? (
-          <>
-            <a
-              href={m.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-xl bg-[var(--accent)] px-4 py-3 text-center text-sm font-medium text-white"
-            >
-              Open PDF in full screen
-            </a>
-            <div className="overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950">
-              <iframe
-                src={m.url}
-                title={m.name ?? "Document"}
-                className="block h-[min(92dvh,900px)] w-full min-h-[72dvh] border-0"
-              />
-            </div>
-          </>
         ) : (
-          <div className="flex flex-col items-center gap-4 rounded-2xl border border-[var(--card-border)] bg-white p-6 text-center shadow-sm dark:bg-zinc-950">
-            <p className="text-sm text-[var(--muted-foreground)]">
-              For a better mobile view, open the document in your browser (full screen).
-            </p>
-            <a
-              href={getOfficeViewerTabUrl(m.url)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex w-full max-w-sm items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-3 text-sm font-medium text-white"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Open document
-            </a>
-            <a href={m.url} download className="text-sm text-[var(--accent)] underline">
-              Download
-            </a>
+          <div className="overflow-hidden rounded-2xl border border-[var(--card-border)] bg-zinc-900/50">
+            <iframe
+              src={getDocViewerUrl(m.url)}
+              title={m.name ?? "Document"}
+              className="block h-[min(88dvh,820px)] w-full min-h-[65dvh] border-0"
+            />
           </div>
         )}
       </div>
