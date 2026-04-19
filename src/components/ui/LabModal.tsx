@@ -71,15 +71,13 @@ function MediaItem({ m }: { m: LabMedia }) {
 
       <div className="flex flex-col gap-3 md:hidden">
         {isMd ? (
-          <div className="flex max-h-[min(62dvh,560px)] min-h-[200px] flex-col overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950">
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
-              <iframe
-                src={m.url}
-                title={m.name ?? "Document"}
-                className="block min-h-[55vh] w-full border-0"
-                sandbox="allow-same-origin"
-              />
-            </div>
+          <div className="overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950">
+            <iframe
+              src={m.url}
+              title={m.name ?? "Document"}
+              sandbox="allow-same-origin"
+              className="block h-[min(92dvh,900px)] w-full min-h-[72dvh] border-0"
+            />
           </div>
         ) : isPdf ? (
           <>
@@ -91,14 +89,12 @@ function MediaItem({ m }: { m: LabMedia }) {
             >
               Open PDF in full screen
             </a>
-            <div className="flex max-h-[min(62dvh,560px)] min-h-[200px] flex-col overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950">
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
-                <iframe
-                  src={m.url}
-                  title={m.name ?? "Document"}
-                  className="block h-[min(70dvh,640px)] min-h-[360px] w-full border-0"
-                />
-              </div>
+            <div className="overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950">
+              <iframe
+                src={m.url}
+                title={m.name ?? "Document"}
+                className="block h-[min(92dvh,900px)] w-full min-h-[72dvh] border-0"
+              />
             </div>
           </>
         ) : (

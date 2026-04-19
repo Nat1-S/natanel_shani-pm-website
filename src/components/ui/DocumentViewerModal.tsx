@@ -191,15 +191,13 @@ export function DocumentViewerModal({ caseStudy, onClose }: Props) {
                         sandbox="allow-same-origin"
                       />
                     </div>
-                    <div className="flex min-h-[50vh] flex-col overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950 md:hidden">
-                      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-                        <iframe
-                          src={activeDoc.url}
-                          title={caseStudy.title}
-                          className="min-h-[55vh] w-full flex-1 border-0"
-                          sandbox="allow-same-origin"
-                        />
-                      </div>
+                    <div className="overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950 md:hidden">
+                      <iframe
+                        src={activeDoc.url}
+                        title={caseStudy.title}
+                        sandbox="allow-same-origin"
+                        className="block h-[min(92dvh,900px)] w-full min-h-[72dvh] border-0"
+                      />
                     </div>
                   </>
                 ) : activeDoc.type === "pdf" ? (
@@ -224,7 +222,7 @@ export function DocumentViewerModal({ caseStudy, onClose }: Props) {
                         <iframe
                           src={activeDoc.url}
                           title={caseStudy.title}
-                          className="h-[min(72vh,640px)] w-full border-0"
+                          className="block h-[min(92dvh,900px)] w-full min-h-[72dvh] border-0"
                         />
                       </div>
                     </div>
