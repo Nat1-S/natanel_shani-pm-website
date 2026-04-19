@@ -70,38 +70,13 @@ function MediaItem({ m }: { m: LabMedia }) {
       </div>
 
       <div className="flex flex-col gap-3 md:hidden">
-        <div className="flex items-center justify-between gap-2 rounded-xl border border-[var(--card-border)] bg-white/90 px-2 py-2 dark:bg-zinc-950/90">
-          <span className="min-w-0 flex-1 truncate text-sm text-[var(--muted-foreground)]">
-            {m.name ?? "Document"}
-          </span>
-          <div className="flex flex-shrink-0 items-center gap-1">
-            <a
-              href={m.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-lg p-2 hover:bg-black/5 dark:hover:bg-white/10"
-              title="Open in new tab"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </a>
-            <a
-              href={m.url}
-              download
-              className="rounded-lg p-2 hover:bg-black/5 dark:hover:bg-white/10"
-              title="Download"
-            >
-              <Download className="h-4 w-4" />
-            </a>
-          </div>
-        </div>
-
         {isMd ? (
-          <div className="flex min-h-[50vh] flex-col overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950">
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+          <div className="flex max-h-[min(62dvh,560px)] min-h-[200px] flex-col overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
               <iframe
                 src={m.url}
                 title={m.name ?? "Document"}
-                className="min-h-[55vh] w-full flex-1 border-0"
+                className="block min-h-[55vh] w-full border-0"
                 sandbox="allow-same-origin"
               />
             </div>
@@ -116,12 +91,14 @@ function MediaItem({ m }: { m: LabMedia }) {
             >
               Open PDF in full screen
             </a>
-            <div className="overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950">
-              <iframe
-                src={m.url}
-                title={m.name ?? "Document"}
-                className="h-[min(72vh,640px)] w-full border-0"
-              />
+            <div className="flex max-h-[min(62dvh,560px)] min-h-[200px] flex-col overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
+                <iframe
+                  src={m.url}
+                  title={m.name ?? "Document"}
+                  className="block h-[min(70dvh,640px)] min-h-[360px] w-full border-0"
+                />
+              </div>
             </div>
           </>
         ) : (
