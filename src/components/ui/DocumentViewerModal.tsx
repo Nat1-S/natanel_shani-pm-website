@@ -21,6 +21,14 @@ function getViewerUrl(url: string, type: string): string {
   return "";
 }
 
+function getOfficeViewerTabUrl(url: string): string {
+  return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}`;
+}
+
+function isOfficeType(type: string) {
+  return ["docx", "doc", "pptx", "xls", "xlsx"].includes(type);
+}
+
 function docLabel(doc: CaseStudyDocument, idx: number): string {
   const labels: Record<string, string> = {
     pdf: "מסמך",
@@ -84,15 +92,15 @@ export function DocumentViewerModal({ caseStudy, onClose }: Props) {
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", damping: 25 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl overflow-hidden glass border border-[var(--card-border)] shadow-2xl"
+            className="relative flex w-full max-w-4xl max-h-[90vh] flex-col overflow-hidden rounded-3xl border border-[var(--card-border)] glass shadow-2xl"
           >
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-[var(--card-border)] flex-shrink-0">
-              <h3 className="text-lg font-semibold text-foreground truncate pr-4">
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-[var(--card-border)] p-4 sm:p-6">
+              <h3 className="truncate pr-4 text-lg font-semibold text-foreground">
                 {caseStudy.title}
               </h3>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
                 {docs.length > 1 && (
-                  <div className="flex gap-1 mr-2">
+                  <div className="mr-2 flex gap-1">
                     {docs.map((doc, i) => (
                       <button
                         key={i}
@@ -115,7 +123,7 @@ export function DocumentViewerModal({ caseStudy, onClose }: Props) {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 rounded-lg hover:bg-white/10 transition-colors text-[var(--muted-foreground)] hover:text-foreground"
-                      title="פתח בלשונית חדשה"
+                      title="Open in new tab"
                     >
                       <ExternalLink className="h-4 w-4" />
                     </a>
@@ -123,7 +131,7 @@ export function DocumentViewerModal({ caseStudy, onClose }: Props) {
                       href={activeDoc.url}
                       download
                       className="p-2 rounded-lg hover:bg-white/10 transition-colors text-[var(--muted-foreground)] hover:text-foreground"
-                      title="הורד"
+                      title="Download"
                     >
                       <Download className="h-4 w-4" />
                     </a>
@@ -142,10 +150,10 @@ export function DocumentViewerModal({ caseStudy, onClose }: Props) {
             <div className="flex-1 overflow-auto p-4 sm:p-6">
               {caseStudy.useCase && (
                 <div className="mb-6">
-                  <h4 className="text-sm font-semibold uppercase tracking-wider text-[var(--accent)] mb-2">
+                  <h4 className="mb-2 text-sm font-semibold uppercase tracking-wider text-[var(--accent)]">
                     Use Case
                   </h4>
-                  <div className="text-[var(--muted-foreground)] leading-relaxed [&>p]:mb-2 last:[&>p]:mb-0 [&>strong]:font-semibold [&>strong]:text-foreground [&>ul]:list-disc [&>ul]:ml-4 [&>ol]:list-decimal [&>ol]:ml-4 [&>li]:mb-1">
+                  <div className="text-[var(--muted-foreground)] leading-relaxed [&>p]:mb-2 last:[&>p]:mb-0 [&>strong]:font-semibold [&>strong]:text-foreground [&>ul]:ml-4 [&>ul]:list-disc [&>ol]:ml-4 [&>ol]:list-decimal [&>li]:mb-1">
                     <ReactMarkdown remarkPlugins={[remarkBreaks]}>
                       {caseStudy.useCase}
                     </ReactMarkdown>
@@ -174,20 +182,90 @@ export function DocumentViewerModal({ caseStudy, onClose }: Props) {
                     />
                   </div>
                 ) : isMd ? (
-                  <div className="rounded-xl overflow-hidden border border-[var(--card-border)] bg-zinc-900/50 min-h-[400px]">
-                    <iframe
-                      src={activeDoc.url}
-                      title={caseStudy.title}
-                      className="w-full h-[60vh] min-h-[400px]"
-                      sandbox="allow-same-origin"
-                    />
-                  </div>
+                  <>
+                    <div className="hidden min-h-[400px] overflow-hidden rounded-xl border border-[var(--card-border)] bg-zinc-900/50 md:block">
+                      <iframe
+                        src={activeDoc.url}
+                        title={caseStudy.title}
+                        className="h-[60vh] min-h-[400px] w-full"
+                        sandbox="allow-same-origin"
+                      />
+                    </div>
+                    <div className="flex min-h-[50vh] flex-col overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950 md:hidden">
+                      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+                        <iframe
+                          src={activeDoc.url}
+                          title={caseStudy.title}
+                          className="min-h-[55vh] w-full flex-1 border-0"
+                          sandbox="allow-same-origin"
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : activeDoc.type === "pdf" ? (
+                  <>
+                    <div className="hidden min-h-[400px] overflow-hidden rounded-xl border border-[var(--card-border)] bg-zinc-900/50 md:block">
+                      <iframe
+                        src={viewerUrl}
+                        title={caseStudy.title}
+                        className="h-[60vh] min-h-[400px] w-full"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-3 md:hidden">
+                      <a
+                        href={activeDoc.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-xl bg-[var(--accent)] px-4 py-3 text-center text-sm font-medium text-white"
+                      >
+                        Open PDF in full screen
+                      </a>
+                      <div className="overflow-hidden rounded-2xl border border-[var(--card-border)] bg-white shadow-sm dark:bg-zinc-950">
+                        <iframe
+                          src={activeDoc.url}
+                          title={caseStudy.title}
+                          className="h-[min(72vh,640px)] w-full border-0"
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : isOfficeType(activeDoc.type) ? (
+                  <>
+                    <div className="hidden min-h-[400px] overflow-hidden rounded-xl border border-[var(--card-border)] bg-zinc-900/50 md:block">
+                      <iframe
+                        src={viewerUrl}
+                        title={caseStudy.title}
+                        className="h-[60vh] min-h-[400px] w-full"
+                      />
+                    </div>
+                    <div className="flex flex-col items-center gap-4 rounded-2xl border border-[var(--card-border)] bg-white p-6 text-center shadow-sm dark:bg-zinc-950 md:hidden">
+                      <p className="text-sm text-[var(--muted-foreground)]">
+                        For a better mobile view, open the document in your browser (full screen).
+                      </p>
+                      <a
+                        href={getOfficeViewerTabUrl(activeDoc.url)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex w-full max-w-sm items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-4 py-3 text-sm font-medium text-white"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        Open document
+                      </a>
+                      <a
+                        href={activeDoc.url}
+                        download
+                        className="text-sm text-[var(--accent)] underline"
+                      >
+                        Download
+                      </a>
+                    </div>
+                  </>
                 ) : (
-                  <div className="rounded-xl overflow-hidden border border-[var(--card-border)] bg-zinc-900/50 min-h-[400px]">
+                  <div className="min-h-[400px] overflow-hidden rounded-xl border border-[var(--card-border)] bg-zinc-900/50">
                     <iframe
                       src={viewerUrl}
                       title={caseStudy.title}
-                      className="w-full h-[60vh] min-h-[400px]"
+                      className="h-[60vh] min-h-[400px] w-full"
                     />
                   </div>
                 )
