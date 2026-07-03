@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { getLabs, addLab, updateLab, deleteLab } from "@/lib/supabase/labs";
+import { getLabsAdmin, addLab, updateLab, deleteLab } from "@/lib/supabase/labs";
 import { uploadFile } from "@/lib/supabase/upload";
 import type { LabProject, LabMedia } from "@/types/lab-project";
 import { Edit2, Trash2, Upload } from "lucide-react";
@@ -23,7 +23,7 @@ export function AdminLabs() {
   const [uploadError, setUploadError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const load = () => getLabs().then(setItems);
+  const load = () => getLabsAdmin().then(setItems);
 
   useEffect(() => {
     load();

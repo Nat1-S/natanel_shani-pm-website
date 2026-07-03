@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { getCaseStudies, addCaseStudy, updateCaseStudy, deleteCaseStudy } from "@/lib/supabase/case-studies";
+import { getCaseStudiesAdmin, addCaseStudy, updateCaseStudy, deleteCaseStudy } from "@/lib/supabase/case-studies";
 import { uploadFile } from "@/lib/supabase/upload";
 import type { CaseStudy, CaseStudyDocument } from "@/types/case-study";
 import { Trash2, Edit2, Upload } from "lucide-react";
@@ -44,7 +44,7 @@ export function AdminCaseStudies() {
   const fileRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLInputElement>(null);
 
-  const load = () => getCaseStudies().then(setItems);
+  const load = () => getCaseStudiesAdmin().then(setItems);
 
   useEffect(() => {
     load();

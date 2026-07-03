@@ -2,6 +2,13 @@ import { createClient, isSupabaseConfigured } from "./client";
 import { mockProjects } from "@/data/mock-projects";
 import type { Project } from "@/types/project";
 
+// Public-safe projection. Anonymous users read through the `projects_public`
+// view, which only exposes fields rendered in the public UI. Internal columns
+// (thumbnail_url, featured, created_at) are intentionally excluded.
+const PROJECTS_PUBLIC_VIEW = "projects_public";
+const PROJECT_PUBLIC_COLUMNS =
+  'id,slug,title,description,tags,problem,solution,impact,video_url,prd_url,strategy_url,live_link,"order"';
+
 function mapRow(row: Record<string, unknown>): Project {
   return {
     id: row.id as string,
@@ -27,8 +34,8 @@ export async function getProjects(): Promise<Project[]> {
   try {
     const supabase = createClient();
     const { data, error } = await supabase
-      .from("projects")
-      .select("*")
+      .from(PROJECTS_PUBLIC_VIEW)
+      .select(PROJECT_PUBLIC_COLUMNS)
       .order("order", { ascending: true });
     if (error || !data?.length) return mockProjects;
     return data.map(mapRow);
@@ -43,8 +50,8 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   try {
     const supabase = createClient();
     const { data, error } = await supabase
-      .from("projects")
-      .select("*")
+      .from(PROJECTS_PUBLIC_VIEW)
+      .select(PROJECT_PUBLIC_COLUMNS)
       .eq("slug", slug)
       .single();
     if (error || !data) return mockProjects.find((p) => p.slug === slug) ?? null;

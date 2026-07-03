@@ -3,7 +3,46 @@ import { mockLabs } from "@/data/mock-labs";
 import { withTimeout } from "@/lib/timeout";
 import type { LabProject } from "@/types/lab-project";
 
+// Public reads go through the `labs_public` view (no internal columns such as
+// created_at). Admin reads use the base table after authentication.
+const LABS_PUBLIC_VIEW = "labs_public";
+const LAB_PUBLIC_COLUMNS =
+  'id,title,description,github_url,live_url,media,tags,"order"';
+
+function mapLab(row: Record<string, unknown>): LabProject {
+  return {
+    id: row.id as string,
+    title: (row.title as string) ?? "Untitled",
+    description: (row.description as string) ?? "",
+    githubUrl: (row.github_url as string) ?? "",
+    liveUrl: (row.live_url as string) ?? "",
+    media: (row.media as LabProject["media"]) ?? [],
+    tags: (row.tags as string[]) ?? [],
+    order: (row.order as number) ?? 0,
+  };
+}
+
 export async function getLabs(): Promise<LabProject[]> {
+  if (!isSupabaseConfigured) return mockLabs;
+  const fetchPromise = (async () => {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from(LABS_PUBLIC_VIEW)
+        .select(LAB_PUBLIC_COLUMNS)
+        .order("order", { ascending: true });
+      if (error || !data?.length) return mockLabs;
+      return data.map(mapLab);
+    } catch (e) {
+      console.error(e);
+      return mockLabs;
+    }
+  })();
+  return withTimeout(fetchPromise, mockLabs);
+}
+
+/** Admin-only: full records straight from the base table (requires auth). */
+export async function getLabsAdmin(): Promise<LabProject[]> {
   if (!isSupabaseConfigured) return mockLabs;
   const fetchPromise = (async () => {
     try {
@@ -13,16 +52,7 @@ export async function getLabs(): Promise<LabProject[]> {
         .select("*")
         .order("order", { ascending: true });
       if (error || !data?.length) return mockLabs;
-      return data.map((row: Record<string, unknown>) => ({
-        id: row.id,
-        title: row.title ?? "Untitled",
-        description: row.description ?? "",
-        githubUrl: row.github_url ?? "",
-        liveUrl: row.live_url ?? "",
-        media: row.media ?? [],
-        tags: row.tags ?? [],
-        order: row.order ?? 0,
-      })) as LabProject[];
+      return data.map(mapLab);
     } catch (e) {
       console.error(e);
       return mockLabs;

@@ -3,6 +3,24 @@ import { mockCaseStudies } from "@/data/mock-case-studies";
 import { withTimeout } from "@/lib/timeout";
 import type { CaseStudy, CaseStudyDocument } from "@/types/case-study";
 
+// Public reads go through the `case_studies_public` view (no internal columns
+// such as created_at). Admin reads use the base table after authentication.
+const CASE_STUDIES_PUBLIC_VIEW = "case_studies_public";
+const CASE_STUDY_PUBLIC_COLUMNS =
+  'id,title,description,use_case,documents,document_url,document_type,image_url,"order"';
+
+function mapCaseStudy(row: Record<string, unknown>): CaseStudy {
+  return {
+    id: row.id as string,
+    title: (row.title as string) ?? "Untitled",
+    description: (row.description as string) ?? "",
+    useCase: (row.use_case as string) ?? "",
+    documents: normalizeDocuments(row as Parameters<typeof normalizeDocuments>[0]),
+    imageUrl: (row.image_url as string) ?? undefined,
+    order: (row.order as number) ?? 0,
+  };
+}
+
 function normalizeDocuments(row: {
   documents?: unknown;
   document_url?: string | null;
@@ -31,19 +49,31 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
     try {
       const supabase = createClient();
       const { data, error } = await supabase
+        .from(CASE_STUDIES_PUBLIC_VIEW)
+        .select(CASE_STUDY_PUBLIC_COLUMNS)
+        .order("order", { ascending: true });
+      if (error || !data?.length) return mockCaseStudies;
+      return data.map(mapCaseStudy);
+    } catch (e) {
+      console.error(e);
+      return mockCaseStudies;
+    }
+  })();
+  return withTimeout(fetchPromise, mockCaseStudies);
+}
+
+/** Admin-only: full records straight from the base table (requires auth). */
+export async function getCaseStudiesAdmin(): Promise<CaseStudy[]> {
+  if (!isSupabaseConfigured) return mockCaseStudies;
+  const fetchPromise = (async () => {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
         .from("case_studies")
         .select("*")
         .order("order", { ascending: true });
       if (error || !data?.length) return mockCaseStudies;
-      return data.map((row) => ({
-        id: row.id,
-        title: row.title ?? "Untitled",
-        description: row.description ?? "",
-        useCase: row.use_case ?? "",
-        documents: normalizeDocuments(row),
-        imageUrl: row.image_url ?? undefined,
-        order: row.order ?? 0,
-      })) as CaseStudy[];
+      return data.map(mapCaseStudy);
     } catch (e) {
       console.error(e);
       return mockCaseStudies;
