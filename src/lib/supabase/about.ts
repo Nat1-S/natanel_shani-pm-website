@@ -1,10 +1,13 @@
 import { createClient, isSupabaseConfigured } from "./client";
 import type { AboutContent } from "@/types/about";
 
+export const DEFAULT_PROFILE_IMAGE = "/images/profile.png";
+
 export const HERO_DEFAULT = {
   heroTagline:
     "From 10 years of IDF combat leadership to building products.\nBlending strategic thinking with hands-on technical execution.",
   heroSkills: ["Product Lifecycle", "AI-Driven", "Data-Driven", "UX/UI", "Leadership"],
+  profileImageUrl: DEFAULT_PROFILE_IMAGE,
 };
 
 export const ABOUT_DEFAULT: AboutContent = {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { getAbout, HERO_DEFAULT } from "@/lib/supabase/about";
+import { getAbout, HERO_DEFAULT, DEFAULT_PROFILE_IMAGE } from "@/lib/supabase/about";
 import { getCached, setCache } from "@/lib/cache";
 
 const CACHE_KEY = "about";
@@ -11,16 +11,25 @@ const CACHE_KEY = "about";
 export function Hero() {
   const [tagline, setTagline] = useState(HERO_DEFAULT.heroTagline);
   const [skills, setSkills] = useState<string[]>(HERO_DEFAULT.heroSkills);
+  const [profileImageUrl, setProfileImageUrl] = useState(
+    HERO_DEFAULT.profileImageUrl ?? DEFAULT_PROFILE_IMAGE
+  );
 
   useEffect(() => {
-    const cached = getCached<{ heroTagline?: string; heroSkills?: string[] }>(CACHE_KEY);
+    const cached = getCached<{
+      heroTagline?: string;
+      heroSkills?: string[];
+      profileImageUrl?: string;
+    }>(CACHE_KEY);
     if (cached) {
       if (cached.heroTagline !== undefined) setTagline(cached.heroTagline);
       if (cached.heroSkills !== undefined) setSkills(cached.heroSkills);
+      if (cached.profileImageUrl) setProfileImageUrl(cached.profileImageUrl);
     }
     getAbout().then((data) => {
       if (data.heroTagline !== undefined) setTagline(data.heroTagline);
       if (data.heroSkills !== undefined) setSkills(data.heroSkills);
+      if (data.profileImageUrl) setProfileImageUrl(data.profileImageUrl);
       setCache(CACHE_KEY, data);
     });
   }, []);
@@ -73,12 +82,14 @@ export function Hero() {
           className="mb-6"
         >
           <Image
-            src="/images/profile.png"
+            key={profileImageUrl}
+            src={profileImageUrl || DEFAULT_PROFILE_IMAGE}
             alt="Natanel Shani"
             width={200}
             height={200}
             className="rounded-full object-cover object-[50%_20%] w-60 h-60 mx-auto border-2 border-[var(--accent)]/30 shadow-lg"
             priority
+            unoptimized={profileImageUrl.startsWith("http")}
           />
         </motion.div>
         <motion.p

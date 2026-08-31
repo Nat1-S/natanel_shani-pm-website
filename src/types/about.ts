@@ -12,4 +12,6 @@ export interface AboutContent {
   cvUrl?: string;
   heroTagline?: string;
   heroSkills?: string[];
+  /** Hero profile photo URL (Supabase Storage or local path). */
+  profileImageUrl?: string;
 }
